@@ -39,6 +39,7 @@ set logFilePath to "/tmp/love_message_bot2.log"
 set phoneNumbersFile to "personal:phone_numbers.txt"
 set messagesFile to "personal:love_messages.txt"
 set maxRandomDelay to 60 -- seconds (0 to this value)
+set messagePrefix to "" -- Prefix added to each message (set to "" for no prefix)
 ```
 
 ### Configuration Options:
@@ -46,6 +47,7 @@ set maxRandomDelay to 60 -- seconds (0 to this value)
 - **phoneNumbersFile**: Relative path from home folder to phone numbers file
 - **messagesFile**: Relative path from home folder to messages file
 - **maxRandomDelay**: Maximum random delay in seconds before sending (0 to this value)
+- **messagePrefix**: Optional prefix to add before each message (e.g., "A joke for you: ")
 
 ---
 
@@ -62,14 +64,18 @@ nano ~/personal/phone_numbers.txt
 
 Example content:
 ```
-+1234567890
-+1987654321
-+1555123456
++1234567890, John Doe
++1987654321, Jane Smith
++1555123456, Bob Johnson
 ```
 
 **Format notes:**
 - One phone number per line
+- Format: `phone_number, name` (comma-separated)
+- Phone number only is also supported: `+1234567890`
 - Include country code (e.g., +1 for US)
+- The name is optional but helps with organization
+- Only the phone number is used; names are ignored by the script
 - Blank lines are automatically ignored
 
 ### Messages File (`~/personal/love_messages.txt`)
@@ -284,6 +290,7 @@ log show --predicate 'process == "cron"' --last 1h
 |----------|----------------|
 | Every day at 9 AM | `0 9 * * *` |
 | Every Monday at 9 AM | `0 9 * * 1` |
+| Every Friday at 1:30 PM | `30 13 * * 5` |
 | Every 2 hours | `0 */2 * * *` |
 | Every 30 minutes | `*/30 * * * *` |
 | Weekdays at 9 AM | `0 9 * * 1-5` |
@@ -316,11 +323,12 @@ Duplicate the script and modify the configuration:
 set logFilePath to "/tmp/jokes_message.log"
 set phoneNumbersFile to "personal:jokes_numbers.txt"
 set messagesFile to "personal:jokes_messages.txt"
+set messagePrefix to "A joke for you: "
 ```
 
-Add separate cron job:
+Add separate cron job for every Friday at 1:30 PM:
 ```bash
-0 12 * * * /usr/bin/osascript /Users/saifshams/code/automessage/jokes_message.scpt >> /tmp/cron_jokes.log 2>&1
+30 13 * * 5 /usr/bin/osascript /Users/saifshams/code/automessage/jokes_message.scpt >> /tmp/cron_jokes.log 2>&1
 ```
 
 ### Rate Limiting for Large Lists

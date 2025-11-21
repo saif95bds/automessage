@@ -5,6 +5,7 @@ set logFilePath to "/tmp/jokes_message.log"
 set phoneNumbersFile to "personal:jokes_numbers.txt"
 set messagesFile to "personal:jokes_messages.txt"
 set maxRandomDelay to 60 -- seconds (0 to this value)
+set messagePrefix to "Smile a little: " -- Prefix added to each message (set to "" for no prefix)
 
 -- ============================================
 -- Log helper function
@@ -22,6 +23,18 @@ on writeLog(logMessage, logPath)
 		end try
 	end try
 end writeLog
+
+-- Trim whitespace helper function
+on trimWhitespace(theText)
+	set whiteSpaceChars to {space, tab, return, linefeed}
+	repeat while theText begins with space or theText begins with tab
+		set theText to text 2 thru -1 of theText
+	end repeat
+	repeat while theText ends with space or theText ends with tab
+		set theText to text 1 thru -2 of theText
+	end repeat
+	return theText
+end trimWhitespace
 
 writeLog("Script started", logFilePath)
 
@@ -43,8 +56,16 @@ try
 	set phoneLines to paragraphs of phoneText
 	set phoneNumbers to {}
 	repeat with p in phoneLines
-		set thisPhone to contents of p
-		if thisPhone is not "" then set end of phoneNumbers to thisPhone
+		set thisLine to contents of p
+		if thisLine is not "" then
+			-- Extract phone number (before comma)
+			set AppleScript's text item delimiters to ","
+			set phoneNumber to text item 1 of thisLine
+			set AppleScript's text item delimiters to ""
+			-- Trim whitespace
+			set phoneNumber to my trimWhitespace(phoneNumber)
+			if phoneNumber is not "" then set end of phoneNumbers to phoneNumber
+		end if
 	end repeat
 	writeLog("Phone numbers loaded: " & (count of phoneNumbers), logFilePath)
 on error errMsg
@@ -94,12 +115,13 @@ tell application "Messages"
 		
 		set idx to (random number from 1 to (count of messageList))
 		set chosenMessage to item idx of messageList
+		set fullMessage to messagePrefix & chosenMessage
 		
-		my writeLog("Sending to " & phoneNumber & ": " & chosenMessage, logFilePath)
+		my writeLog("Sending to " & phoneNumber & ": " & fullMessage, logFilePath)
 		
 		try
 			set theBuddy to participant phoneNumber of theService
-			send chosenMessage to theBuddy
+			send fullMessage to theBuddy
 			my writeLog("Message sent successfully to " & phoneNumber, logFilePath)
 		on error errMsg
 			my writeLog("ERROR sending to " & phoneNumber & ": " & errMsg, logFilePath)
