@@ -4,7 +4,7 @@
 set logFilePath to "/tmp/love_message_bot2.log"
 set phoneNumbersFile to "personal:phone_numbers.txt"
 set messagesFile to "personal:love_messages.txt"
-set maxRandomDelay to 6 -- seconds (0 to this value)
+set maxRandomDelay to 60 -- seconds (0 to this value)
 
 -- ============================================
 -- Log helper function
