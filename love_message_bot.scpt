@@ -5,7 +5,7 @@ set logFilePath to "/tmp/love_message.log"
 set phoneNumbersFile to "personal:love_numbers.txt"
 set messagesFile to "personal:love_messages.txt"
 set maxRandomDelay to 60 -- seconds (0 to this value)
-set messagePrefix to "Smile a little: " -- Prefix added to each message (set to "" for no prefix)
+set messagePrefix to "Love you. " -- Prefix added to each message (set to "" for no prefix)
 
 -- ============================================
 -- Log helper function
